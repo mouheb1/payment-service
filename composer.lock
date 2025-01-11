@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e748e4d221a3a5c5da33962b79a94c2e",
+    "content-hash": "b79f7ff4df8020d797b8ca5fcf2d71e4",
     "packages": [
         {
             "name": "brick/math",
@@ -580,6 +580,59 @@
                 }
             ],
             "time": "2023-10-12T05:21:21+00:00"
+        },
+        {
+            "name": "globalpayments/php-sdk",
+            "version": "13.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/globalpayments/php-sdk.git",
+                "reference": "2924c58867c144b9b2660b0267b0aef49ba1b761"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/globalpayments/php-sdk/zipball/2924c58867c144b9b2660b0267b0aef49ba1b761",
+                "reference": "2924c58867c144b9b2660b0267b0aef49ba1b761",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-fileinfo": "*",
+                "ext-intl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "ext-zlib": "*",
+                "php": ">= 8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "^7.5 || ^8.5 || ~9.4",
+                "squizlabs/php_codesniffer": "2.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GlobalPayments\\Api\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Heartland Payment Systems"
+                }
+            ],
+            "description": "PHP SDK for processing payments with Global Payments, including Heartland Payment Systems and Realex Payments",
+            "homepage": "https://developer.heartlandpaymentsystems.com/documentation",
+            "support": {
+                "issues": "https://github.com/globalpayments/php-sdk/issues",
+                "source": "https://github.com/globalpayments/php-sdk/tree/13.0.7"
+            },
+            "time": "2024-12-04T13:15:21+00:00"
         },
         {
             "name": "graham-campbell/result-type",

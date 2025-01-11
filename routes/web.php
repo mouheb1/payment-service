@@ -3,6 +3,7 @@ use App\Http\Controllers\ProfileController;
 
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\PaymentController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,12 @@ Route::middleware('auth')->get('/services', [ServiceController::class, 'index'])
 // Transactions Page
 Route::middleware('auth')->get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
 
+// Payment Page
+Route::middleware('auth')->get('/payment', [PaymentController::class, 'showPaymentForm'])->name('payment.landing');
+
+Route::post('/payment/callback', [PaymentController::class, 'handleCallback'])->name('payment.callback');
+
+Route::post('/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
 
 // Include Laravel Breeze or Fortify Authentication Routes
 require __DIR__ . '/auth.php';

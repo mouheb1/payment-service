@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'globalpayments' => [
+        'app_id' => env('GLOBALPAYMENTS_APP_ID'),
+        'app_key' => env('GLOBALPAYMENTS_APP_KEY'),
+        'environment' => env('GLOBALPAYMENTS_ENVIRONMENT', 'TEST'),
+    ],
+
 ];
