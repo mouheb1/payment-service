@@ -1,91 +1,117 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { useState } from "react";
+import { Head } from "@inertiajs/react";
+import axios from "axios";
 
 export default function LandingPage() {
-    return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Payment
-                </h2>
-            }
-        >
-            <Head title="Payment" />
+    const [formData, setFormData] = useState({
+        card_number: "",
+        expiry_month: "",
+        expiry_year: "",
+        cvv: "",
+        cardholder_name: "",
+        amount: 0,
+    });
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6">
-                            <form className="max-w-md mx-auto">
-                                <div className="mb-4">
-                                    <label
-                                        htmlFor="cardNumber"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Card Number
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="cardNumber"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                        placeholder="1234 5678 9012 3456"
-                                    />
-                                </div>
-                                <div className="mb-4">
-                                    <label
-                                        htmlFor="cardHolder"
-                                        className="block text-sm font-medium text-gray-700"
-                                    >
-                                        Card Holder Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="cardHolder"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                        placeholder="John Doe"
-                                    />
-                                </div>
-                                <div className="flex gap-4 mb-4">
-                                    <div className="w-1/2">
-                                        <label
-                                            htmlFor="expiryDate"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
-                                            Expiry Date
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="expiryDate"
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            placeholder="MM/YY"
-                                        />
-                                    </div>
-                                    <div className="w-1/2">
-                                        <label
-                                            htmlFor="cvv"
-                                            className="block text-sm font-medium text-gray-700"
-                                        >
-                                            CVV
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="cvv"
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                            placeholder="123"
-                                        />
-                                    </div>
-                                </div>
-                                <button
-                                    type="submit"
-                                    className="w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-                                >
-                                    Pay Now
-                                </button>
-                            </form>
-                        </div>
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handlePayment = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage("");
+
+        try {
+            const response = await axios.post("/payment/process", formData);
+            setMessage(response.data.message);
+        } catch (error) {
+            setMessage(
+                error.response?.data?.message || "An error occurred during payment."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="max-w-2xl mx-auto">
+            <Head title="Payment" />
+            <h1 className="text-2xl font-semibold mb-4">Make a Payment</h1>
+            {message && <p className="mb-4 text-center">{message}</p>}
+            <form onSubmit={handlePayment} className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium">Card Number</label>
+                    <input
+                        type="text"
+                        name="card_number"
+                        value={formData.card_number}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    />
+                </div>
+                <div className="flex space-x-4">
+                    <div>
+                        <label className="block text-sm font-medium">Expiry Month</label>
+                        <input
+                            type="number"
+                            name="expiry_month"
+                            value={formData.expiry_month}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium">Expiry Year</label>
+                        <input
+                            type="number"
+                            name="expiry_year"
+                            value={formData.expiry_year}
+                            onChange={handleInputChange}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        />
                     </div>
                 </div>
-            </div>
-        </AuthenticatedLayout>
+                <div>
+                    <label className="block text-sm font-medium">CVV</label>
+                    <input
+                        type="text"
+                        name="cvv"
+                        value={formData.cvv}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium">Cardholder Name</label>
+                    <input
+                        type="text"
+                        name="cardholder_name"
+                        value={formData.cardholder_name}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium">Amount</label>
+                    <input
+                        type="number"
+                        name="amount"
+                        value={formData.amount}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    />
+                </div>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-2 bg-blue-600 text-white rounded-md"
+                >
+                    {loading ? "Processing..." : "Pay Now"}
+                </button>
+            </form>
+        </div>
     );
 }
