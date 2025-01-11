@@ -1,0 +1,11 @@
+[90m= [39m[34;4mApp\Models\Transaction[39;24m {#6398
+    [34muser_id[39m: [35m1[39m,
+    [34mservice_id[39m: [35m1[39m,
+    [34mtransaction_id[39m: "[32mTX12345[39m",
+    [34mamount[39m: [33m49.99[39m,
+    [34mstatus[39m: "[32mpending[39m",
+    [34mupdated_at[39m: "[32m2025-01-11 11:44:29[39m",
+    [34mcreated_at[39m: "[32m2025-01-11 11:44:29[39m",
+    [34mid[39m: [35m1[39m,
+  }
+
