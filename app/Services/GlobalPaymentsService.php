@@ -13,9 +13,9 @@ class GlobalPaymentsService
 
     public function __construct()
     {
-        $this->baseUrl = config('services.globalpay.base_url');
-        $this->appId = config('services.globalpay.app_id');
-        $this->appKey = config('services.globalpay.app_key');
+        $this->baseUrl = config('services.globalpayments.base_url');
+        $this->appId = config('services.globalpayments.app_id');
+        $this->appKey = config('services.globalpayments.app_key');
     }
 
     /**

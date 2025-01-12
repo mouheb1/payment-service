@@ -63,8 +63,8 @@ class TransactionController extends Controller
                     "expiry_year"  => $request->expiry_year,
                     "cvv"          => $request->cvv,
                     "cvv_indicator" => "PRESENT",
-                    "avs_address" => "Flat 123",     // Optional
-                    "avs_postal_code" => "50001",    // Optional
+                    "avs_address" => "",     // Optional
+                    "avs_postal_code" => "",    // Optional
                 ]
             ]
         ];
@@ -72,17 +72,21 @@ class TransactionController extends Controller
         try {
             $response = $paymentService->createTransaction($token, $payload);
 
-            // Store the transaction with status = 'authorized' (or 'pending')
+            // Store the transaction with the necessary fields
             $transaction = Transaction::create([
                 'user_id' => Auth::id(),
                 'service_id' => $service->id,
-                'transaction_id' => $response['id'],  // TRN_xxx
+                'transaction_id' => $response['id'], // TRN_xxx
                 'authorization_id' => $response['id'],
                 'amount' => $request->amount,
                 'status' => $response['status'], // "AUTHORIZED" or "PREAUTHORIZED"
                 'capture_mode' => $response['capture_mode'] ?? 'LATER',
                 'currency' => $response['currency'] ?? 'EUR',
                 'reference' => $response['reference'] ?? null,
+                'country' => $payload['country'], // Included from payload
+                'merchant_id' => config('services.globalpayments.merchant_id'), // From .env or services.php
+                'payer_id' => Auth::id(), // Connected user
+                'payment_method_id' => 'ONLINE_PAYMENT', // Static value
             ]);
 
             return response()->json(['success' => true, 'transaction' => $transaction]);
@@ -107,7 +111,7 @@ class TransactionController extends Controller
         // Convert amount to integer (cents)
         $amountInCents = (int) round($request->amount);
 
-        // We do a capture on the same transaction ID
+        // Capture on the same transaction ID
         $payload = [
             "amount" => $amountInCents,
         ];
@@ -115,7 +119,7 @@ class TransactionController extends Controller
         try {
             $response = $paymentService->captureTransaction($token, $transaction->authorization_id, $payload);
 
-            // Ensure final_amount is saved as an integer
+            // Update transaction with final details
             $transaction->update([
                 'capture_id' => $response['id'],
                 'final_amount' => (int) $response['amount'], // Parse to integer
