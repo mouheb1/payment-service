@@ -30,7 +30,8 @@ export default function PreAuthorizeTransaction({ service }) {
                 alert(`Error: ${response.data.message}`);
             }
         } catch (error) {
-            alert(`Exception: ${error.message}`);
+            console.error(error);
+            alert(`Exception: ${error.response?.data?.message || error.message}`);
         } finally {
             setLoading(false);
         }
@@ -45,7 +46,7 @@ export default function PreAuthorizeTransaction({ service }) {
                 <div className="mx-auto max-w-3xl sm:px-6 lg:px-8">
                     <div className="bg-white p-6 rounded shadow">
                         <h3 className="text-lg font-semibold">Service: {service.name}</h3>
-                        <p className="text-gray-600 mb-4">Amount: {service.price}</p>
+                        <p className="text-gray-600 mb-4">Amount: ${service.price}</p>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label className="block text-gray-700">Cardholder Name</label>
@@ -85,8 +86,6 @@ export default function PreAuthorizeTransaction({ service }) {
                                         name="expiry_year"
                                         onChange={handleChange}
                                         className="mt-1 w-full border p-2"
-                                        min={25}
-                                        max={35}
                                         required
                                     />
                                 </div>
@@ -102,6 +101,7 @@ export default function PreAuthorizeTransaction({ service }) {
                                 />
                             </div>
                             <button
+                                type="submit"
                                 disabled={loading}
                                 className={`px-4 py-2 text-white rounded ${
                                     loading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'

@@ -7,7 +7,7 @@ use App\Models\Transaction;
 use App\Services\GlobalPaymentsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -26,26 +26,22 @@ class TransactionController extends Controller
         ]);
     }
 
-
     public function createTransaction(Request $request, GlobalPaymentsService $paymentService)
     {
         $request->validate([
             'service_id' => 'required|exists:services,id',
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|min:0.01',
         ]);
 
         $service = Service::findOrFail($request->service_id);
 
         $token = $paymentService->generateAccessToken();
 
-        // Convert amount to cents
-        $amountInCents = intval(round($request->amount * 100));
-
         $payload = [
-            "account_name" => "Transaction_Processing",
+            "account_name" => "pay_link_hpp",
             "type" => "SALE",
             "channel" => "CNP",
-            "amount" => $amountInCents,
+            "amount" => $request->amount,
             "currency" => "EUR",
             "reference" => "txn_" . uniqid(),
             "capture_mode" => "LATER",
@@ -63,12 +59,19 @@ class TransactionController extends Controller
 
         $response = $paymentService->createTransaction($token, $payload);
 
+        if (!isset($response['id'])) {
+            return response()->json([
+                'success' => false,
+                'message' => $response['message'] ?? 'Transaction creation failed',
+            ], 400);
+        }
+
         $transaction = Transaction::create([
             'user_id' => Auth::id(),
             'service_id' => $service->id,
             'transaction_id' => $response['id'],
             'authorization_id' => $response['id'],
-            'amount' => $request->amount, // Float amount
+            'amount' => $request->amount, // Float amount (EUR)
             'currency' => $response['currency'] ?? 'EUR',
             'status' => $response['status'],
             'capture_mode' => $response['capture_mode'],
@@ -81,6 +84,7 @@ class TransactionController extends Controller
 
         return response()->json(['success' => true, 'transaction' => $transaction]);
     }
+
 
 
     /**

@@ -13,12 +13,6 @@ class TransactionFactory extends Factory
 
     public function definition()
     {
-        return [
-            'user_id' => User::factory(),
-            'service_id' => Service::factory(),
-            'transaction_id' => $this->faker->uuid,
-            'amount' => $this->faker->numberBetween(1000, 50000), // Stored in cents
-            'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
-        ];
+        
     }
 }
