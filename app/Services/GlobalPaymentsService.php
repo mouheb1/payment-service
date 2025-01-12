@@ -43,28 +43,8 @@ class GlobalPaymentsService
         return $response->json('token');
     }
 
-
     /**
-     * Tokenize Card
-     */
-    public function tokenizeCard($token, array $payload)
-    {
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$token}",
-            'Content-Type' => 'application/json',
-            'X-GP-Version' => '2021-03-22',
-        ])->post("{$this->baseUrl}/payment-methods", $payload);
-
-        if ($response->failed()) {
-            throw new \Exception('Failed to tokenize card: ' . $response->body());
-        }
-
-        return $response->json(); // { id: "PMT_xxx", ... }
-    }
-
-
-    /**
-     * Create Payment Link (already existing in your code)
+     * Create Payment Link (maybe delete this method)
      */
     public function createPaymentLink($token, $data)
     {
@@ -81,48 +61,8 @@ class GlobalPaymentsService
         return $response->json();
     }
 
-    /**
-     * Authorize a transaction (SALE with capture_mode=LATER)
-     */
-    public function authorizeSale($token, array $payload)
-    {
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'X-GP-Version' => '2021-03-22',
-        ])->withToken($token)
-            ->post("{$this->baseUrl}/transactions", $payload);
-
-        if ($response->failed()) {
-            throw new \Exception('Failed to authorize sale: ' . $response->body());
-        }
-
-        return $response->json(); // e.g. { id: 'TRN_...', status: 'AUTHORIZED', ... }
-    }
-
-    /**
-     * Capture an authorized transaction
-     */
-    public function captureSale($token, string $authorizationId, array $payload = [])
-    {
-        $endpoint = "{$this->baseUrl}/transactions/{$authorizationId}/capture";
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            'X-GP-Version' => '2021-03-22',
-        ])->withToken($token)
-            ->post($endpoint, $payload);
-
-        if ($response->failed()) {
-            throw new \Exception('Failed to capture sale: ' . $response->body());
-        }
-
-        return $response->json();
-    }
-
     public function createTransaction($token, $data)
     {
-        // Debug: Echo the token and payload
-        // echo "Token: $token\n";
-        // echo "Payload: " . json_encode($data, JSON_PRETTY_PRINT) . "\n";
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'X-GP-Version' => '2021-03-22',

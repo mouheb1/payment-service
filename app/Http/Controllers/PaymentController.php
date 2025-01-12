@@ -8,6 +8,7 @@ use GlobalPayments\Api\ServiceConfigs\Gateways\GpEcomConfig;
 use GlobalPayments\Api\Services\HostedService;
 use Illuminate\Support\Facades\Log;
 
+// unused
 class PaymentController extends Controller
 {
     /**
