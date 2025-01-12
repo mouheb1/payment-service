@@ -38,11 +38,14 @@ class TransactionController extends Controller
 
         $token = $paymentService->generateAccessToken();
 
+        // Convert amount to cents
+        $amountInCents = intval(round($request->amount * 100));
+
         $payload = [
             "account_name" => "Transaction_Processing",
             "type" => "SALE",
             "channel" => "CNP",
-            "amount" => intval($request->amount * 100),
+            "amount" => $amountInCents,
             "currency" => "EUR",
             "reference" => "txn_" . uniqid(),
             "capture_mode" => "LATER",
@@ -50,7 +53,7 @@ class TransactionController extends Controller
                 "name" => "John Doe",
                 "entry_mode" => "ECOM",
                 "card" => [
-                    "number" => "4263970000005262", // Replace with real data
+                    "number" => "4263970000005262",
                     "expiry_month" => "05",
                     "expiry_year" => "25",
                     "cvv" => "852",
@@ -65,7 +68,7 @@ class TransactionController extends Controller
             'service_id' => $service->id,
             'transaction_id' => $response['id'],
             'authorization_id' => $response['id'],
-            'amount' => $request->amount,
+            'amount' => $request->amount, // Float amount
             'currency' => $response['currency'] ?? 'EUR',
             'status' => $response['status'],
             'capture_mode' => $response['capture_mode'],
@@ -78,6 +81,7 @@ class TransactionController extends Controller
 
         return response()->json(['success' => true, 'transaction' => $transaction]);
     }
+
 
     /**
      * Tokenize the user's card and store the Payment Method ID

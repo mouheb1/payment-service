@@ -13,30 +13,30 @@ class Transaction extends Model
         'user_id',
         'service_id',
         'transaction_id',
-        'authorization_id',   // To store the authorization ID from the API
-        'capture_id',         // To store the capture ID (if applicable)
-        'amount',             // Initial transaction amount
-        'final_amount',       // Adjusted final amount after capture
-        'status',             // Status of the transaction (pending, captured, etc.)
-        'capture_mode',       // Mode of capture (AUTO, LATER)
-        'currency',           // Transaction currency
-        'country',            // Country associated with the transaction
-        'reference',          // Reference field for the transaction
-        'merchant_id',        // Merchant ID associated with the transaction
-        'payer_id',           // Payer's ID returned by the API
-        'payment_method_id',  // Stored payment method ID
-        'payment_method_data', // JSON field to store payment method details
+        'authorization_id',
+        'capture_id',
+        'amount',
+        'final_amount',
+        'status',
+        'capture_mode',
+        'currency',
+        'country',
+        'reference',
+        'merchant_id',
+        'payer_id',
+        'payment_method_id',
+        'payment_method_data',
     ];
 
     protected $casts = [
-        'amount' => 'float',
-        'final_amount' => 'float',
-        'payment_method_data' => 'json', // Cast payment method details as JSON
+        'amount' => 'integer', // Stored in cents
+        'final_amount' => 'integer', // Stored in cents
+        'payment_method_data' => 'json',
     ];
 
     protected $attributes = [
-        'status' => 'pending',     // Default transaction status
-        'capture_mode' => 'LATER', // Default capture mode
+        'status' => 'pending',
+        'capture_mode' => 'LATER',
     ];
 
     public function user()
@@ -47,5 +47,27 @@ class Transaction extends Model
     public function service()
     {
         return $this->belongsTo(Service::class);
+    }
+
+    // Accessor: Convert from cents to a float (e.g., 12345 => 123.45)
+    public function getAmountAttribute($value)
+    {
+        return $value / 100;
+    }
+
+    public function getFinalAmountAttribute($value)
+    {
+        return $value / 100;
+    }
+
+    // Mutator: Convert from float to cents when saving (e.g., 123.45 => 12345)
+    public function setAmountAttribute($value)
+    {
+        $this->attributes['amount'] = (int)round($value * 100);
+    }
+
+    public function setFinalAmountAttribute($value)
+    {
+        $this->attributes['final_amount'] = (int)round($value * 100);
     }
 }

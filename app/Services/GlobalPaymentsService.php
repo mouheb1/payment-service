@@ -121,8 +121,8 @@ class GlobalPaymentsService
     public function createTransaction($token, $data)
     {
         // Debug: Echo the token and payload
-        echo "Token: $token\n";
-        echo "Payload: " . json_encode($data, JSON_PRETTY_PRINT) . "\n";
+        // echo "Token: $token\n";
+        // echo "Payload: " . json_encode($data, JSON_PRETTY_PRINT) . "\n";
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'X-GP-Version' => '2021-03-22',
@@ -137,6 +137,8 @@ class GlobalPaymentsService
 
     public function captureTransaction($token, $transactionId, $data)
     {
+        echo "Token: $token\n";
+        echo "Payload: " . json_encode($data, $transactionId) . "\n";
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
             'X-GP-Version' => '2021-03-22',
