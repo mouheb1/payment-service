@@ -42,6 +42,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Transactions
                                 </NavLink>
+                                <NavLink
+                                    href={route('provider.transactions.index')}
+                                    active={route().current('provider.transactions.index')}
+                                >
+                                    Provider Transactions
+                                </NavLink>
                             </div>
                         </div>
 

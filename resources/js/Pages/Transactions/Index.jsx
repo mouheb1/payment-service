@@ -9,7 +9,7 @@ export default function TransactionsIndex({ transactions }) {
             <Head title="Transactions" />
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <table className="min-w-full border border-gray-300">
+                    <table className="min-w-full border border-gray-300 mb-6 p-4 bg-white shadow rounded">
                         <thead>
                             <tr>
                                 <th className="border px-4 py-2">ID</th>

@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProviderTransactionController;
 use App\Models\Service;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +63,8 @@ Route::middleware('auth')->group(function () {
     // 4. Capture Transaction (POST)
     Route::post('/transactions/{transactionId}/capture', [TransactionController::class, 'captureTransaction'])
         ->name('transactions.capture');
+
+    Route::get('/provider-transactions', [ProviderTransactionController::class, 'index'])->name('provider.transactions.index');
 });
 
 
