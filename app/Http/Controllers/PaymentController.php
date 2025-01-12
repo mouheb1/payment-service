@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
-use GlobalPayments\Api\Entities\Transaction;
-use GlobalPayments\Api\PaymentMethods\CreditCardData;
-use GlobalPayments\Api\Exceptions\ApiException;
+use GlobalPayments\Api\ServiceConfigs\Gateways\GpEcomConfig;
+use GlobalPayments\Api\Services\HostedService;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -16,69 +15,61 @@ class PaymentController extends Controller
      */
     public function showPaymentForm()
     {
-        return Inertia::render('Payment/LandingPage', [
-            'globalPaymentsConfig' => [
-                'appId' => env('GLOBALPAYMENTS_APP_ID'),
-                'appKey' => env('GLOBALPAYMENTS_APP_KEY'),
-            ],
-        ]);
+        return Inertia::render('Payment/LandingPage');
     }
 
-    public function handleCallback(Request $request)
+    /**
+     * Generate HPP JSON.
+     */
+    public function getHppJson(Request $request)
     {
-        // Capture payment status from the request
-        $status = $request->input('status');
-        $transactionId = $request->input('transactionId');
+        $config = new GpEcomConfig();
+        $config->merchantId = config('services.globalpayments.merchant_id');
+        $config->accountId = config('services.globalpayments.account_id', 'internet');
+        $config->sharedSecret = config('services.globalpayments.shared_secret');
+        $config->serviceUrl = "https://pay.sandbox.realexpayments.com/pay";
 
-        // Update the database (e.g., mark transaction as paid)
-        // You can also handle specific statuses like success, failure, etc.
+        $service = new HostedService($config);
 
-        // Redirect to a success or failure page
-        return redirect()->route('transactions.index')->with('status', $status);
-    }
+        $timestamp = now()->format('YmdHis');
+        $orderId = uniqid();
+        $amount = intval($request->amount * 100); // Convert to cents
+        $currency = 'EUR';
 
-    public function processPayment(Request $request)
-    {
-        $request->validate([
-            'card_number' => 'required|string',
-            'expiry_month' => 'required|numeric|between:1,12',
-            'expiry_year' => 'required|numeric|min:' . now()->year,
-            'cvv' => 'required|string|min:3|max:4',
-            'cardholder_name' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:1',
-        ]);
-
-        $card = new CreditCardData();
-        $card->number = $request->card_number;
-        $card->expMonth = $request->expiry_month;
-        $card->expYear = $request->expiry_year;
-        $card->cvn = $request->cvv;
-        $card->cardHolderName = $request->cardholder_name;
+        // Calculate SHA1HASH
+        $hashString = "$timestamp.{$config->merchantId}.$orderId.$amount.$currency";
+        $sha1Hash = sha1(sha1($hashString) . '.' . $config->sharedSecret);
 
         try {
-            $response = $card->charge($request->amount)
-                ->withCurrency("EUR")
-                ->execute();
+            $hppJson = [
+                'MERCHANT_ID' => $config->merchantId,
+                'ACCOUNT' => $config->accountId,
+                'ORDER_ID' => $orderId,
+                'AMOUNT' => $amount,
+                'CURRENCY' => $currency,
+                'TIMESTAMP' => $timestamp,
+                'AUTO_SETTLE_FLAG' => '1',
+                'HPP_VERSION' => '2',
+                'SHA1HASH' => $sha1Hash,
+            ];
 
-            Transaction::create([
-                'user_id' => auth()->id(),
-                'service_id' => $request->service_id ?? null,
-                'transaction_id' => $response->transactionId,
-                'amount' => $request->amount,
-                'status' => $response->responseCode,
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => $response->responseMessage,
-            ]);
-        } catch (ApiException $e) {
-            logger()->error("Payment failed: {$e->getMessage()}");
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Payment failed. Please try again later.',
-            ], 400);
+            return response()->json(['hppJson' => $hppJson]);
+        } catch (\Exception $e) {
+            Log::error('Error generating HPP JSON', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to generate HPP JSON.'], 500);
         }
+    }
+
+    /**
+     * Handle callback from HPP.
+     */
+    public function handleCallback(Request $request)
+    {
+        $response = $request->all();
+        Log::info('HPP Callback Response', $response);
+
+        // Validate the response SHA1HASH here if needed.
+
+        return redirect()->route('transactions.index')->with('status', 'Payment processed successfully.');
     }
 }

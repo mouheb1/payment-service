@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\ProfileController;
 
 use App\Http\Controllers\ServiceController;
@@ -31,34 +32,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Services Page
-    Route::get('/services', function () {
-        return Inertia::render('Services/Index');
-    })->name('services.index');
+    // Services
+    Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 
-    // Transactions Page
-    Route::get('/transactions', function () {
-        return Inertia::render('Transactions/Index');
-    })->name('transactions.index');
-
-    // Payment Landing Page
-    Route::get('/payment', function () {
-        return Inertia::render('Payment/LandingPage');
-    })->name('payment.landing');
+    // Transactions
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
 });
 
-// Services Page
-Route::middleware('auth')->get('/services', [ServiceController::class, 'index'])->name('services.index');
 
-// Transactions Page
-Route::middleware('auth')->get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
-
-// Payment Page
-Route::middleware('auth')->get('/payment', [PaymentController::class, 'showPaymentForm'])->name('payment.landing');
-
-Route::post('/payment/callback', [PaymentController::class, 'handleCallback'])->name('payment.callback');
-
-Route::post('/payment/process', [PaymentController::class, 'processPayment'])->name('payment.process');
 
 // Include Laravel Breeze or Fortify Authentication Routes
 require __DIR__ . '/auth.php';

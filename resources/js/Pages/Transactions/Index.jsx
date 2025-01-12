@@ -2,19 +2,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 
 export default function Transactions({ transactions }) {
-    const getStatusClass = (status) => {
-        switch (status) {
-            case 'Success':
-                return 'text-green-600';
-            case 'Pending':
-                return 'text-yellow-600';
-            case 'Failed':
-                return 'text-red-600';
-            default:
-                return 'text-gray-600';
-        }
-    };
-
     return (
         <AuthenticatedLayout
             header={
@@ -24,7 +11,6 @@ export default function Transactions({ transactions }) {
             }
         >
             <Head title="Transactions" />
-
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -44,9 +30,6 @@ export default function Transactions({ transactions }) {
                                         <th className="border border-gray-200 px-4 py-2 text-left text-gray-800">
                                             Status
                                         </th>
-                                        <th className="border border-gray-200 px-4 py-2 text-left text-gray-800">
-                                            Date
-                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,15 +44,8 @@ export default function Transactions({ transactions }) {
                                             <td className="border border-gray-200 px-4 py-2">
                                                 ${transaction.amount.toFixed(2)}
                                             </td>
-                                            <td
-                                                className={`border border-gray-200 px-4 py-2 ${getStatusClass(
-                                                    transaction.status,
-                                                )}`}
-                                            >
-                                                {transaction.status}
-                                            </td>
                                             <td className="border border-gray-200 px-4 py-2">
-                                                {transaction.created_at}
+                                                {transaction.status}
                                             </td>
                                         </tr>
                                     ))}

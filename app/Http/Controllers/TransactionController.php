@@ -9,16 +9,16 @@ use Inertia\Inertia;
 class TransactionController extends Controller
 {
     /**
-     * Display a listing of the user's transactions.
+     * Display the user's transactions.
      */
     public function index()
     {
-        // Fetch transactions for the authenticated user
+        // Fetch user-specific transactions
         $transactions = Transaction::with('service')
             ->where('user_id', Auth::id())
             ->get();
 
-        // Pass data to the Transactions page
+        // Pass data to the frontend
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
         ]);
