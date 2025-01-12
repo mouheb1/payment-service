@@ -86,7 +86,6 @@ class TransactionController extends Controller
     }
 
 
-
     /**
      * Tokenize the user's card and store the Payment Method ID
      */
@@ -197,23 +196,27 @@ class TransactionController extends Controller
         $transaction = Transaction::where('transaction_id', $transactionId)->firstOrFail();
 
         $request->validate([
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|min:0.01',
         ]);
 
         $token = $paymentService->generateAccessToken();
 
+        // Convert amount to integer (cents)
+        $amountInCents = (int) round($request->amount * 100);
+
         // We do a capture on the same transaction ID
         $payload = [
-            "amount" => $request->amount,
+            "amount" => $amountInCents,
         ];
 
         try {
             $response = $paymentService->captureTransaction($token, $transaction->authorization_id, $payload);
 
+            // Ensure final_amount is saved as an integer
             $transaction->update([
                 'capture_id' => $response['id'],
-                'final_amount' => $response['amount'],
-                'status' => 'captured',
+                'final_amount' => (int) $response['amount'], // Parse to integer
+                'status' => 'CAPTURED',
             ]);
 
             return response()->json(['success' => true, 'transaction' => $transaction]);
