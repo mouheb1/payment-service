@@ -43,6 +43,26 @@ class GlobalPaymentsService
         return $response->json('token');
     }
 
+
+    /**
+     * Tokenize Card
+     */
+    public function tokenizeCard($token, array $payload)
+    {
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$token}",
+            'Content-Type' => 'application/json',
+            'X-GP-Version' => '2021-03-22',
+        ])->post("{$this->baseUrl}/payment-methods", $payload);
+
+        if ($response->failed()) {
+            throw new \Exception('Failed to tokenize card: ' . $response->body());
+        }
+
+        return $response->json(); // { id: "PMT_xxx", ... }
+    }
+
+
     /**
      * Create Payment Link (already existing in your code)
      */

@@ -1,14 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 
 export default function Services({ services }) {
     return (
         <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Services
-                </h2>
-            }
+            header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Services</h2>}
         >
             <Head title="Services" />
             <div className="py-12">
@@ -26,9 +22,12 @@ export default function Services({ services }) {
                                 <p className="mt-4 text-lg font-medium text-gray-800">
                                     ${service.price.toFixed(2)}
                                 </p>
-                                <button className="mt-4 w-full rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
+                                <Link
+                                    href={route('transactions.createForm')}
+                                    className="mt-4 inline-block w-full rounded bg-blue-600 px-4 py-2 text-center text-white hover:bg-blue-700"
+                                >
                                     Pay Now
-                                </button>
+                                </Link>
                             </div>
                         ))}
                     </div>

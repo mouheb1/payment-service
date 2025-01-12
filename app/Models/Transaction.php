@@ -13,22 +13,30 @@ class Transaction extends Model
         'user_id',
         'service_id',
         'transaction_id',
-        'amount',
-        'status',
-        'authorization_id',   // New
-        'capture_id',         // New
-        'capture_mode',       // New
-        'final_amount',       // New
+        'authorization_id',   // To store the authorization ID from the API
+        'capture_id',         // To store the capture ID (if applicable)
+        'amount',             // Initial transaction amount
+        'final_amount',       // Adjusted final amount after capture
+        'status',             // Status of the transaction (pending, captured, etc.)
+        'capture_mode',       // Mode of capture (AUTO, MANUAL)
+        'currency',           // Transaction currency
+        'country',            // Country associated with the transaction
+        'reference',          // Reference field for the transaction
+        'merchant_id',        // Merchant ID associated with the transaction
+        'payer_id',           // Payer's ID returned by the API
+        'payment_method_id',  // Stored payment method ID
+        'payment_method_data', // JSON field to store payment method details
     ];
 
     protected $casts = [
         'amount' => 'float',
-        'final_amount' => 'float', // Ensure final_amount is cast to float
+        'final_amount' => 'float',
+        'payment_method_data' => 'json', // Cast payment method details as JSON
     ];
 
     protected $attributes = [
-        'status' => 'pending',
-        'capture_mode' => 'MANUAL', // Default if you prefer
+        'status' => 'pending',     // Default transaction status
+        'capture_mode' => 'MANUAL', // Default capture mode
     ];
 
     public function user()
