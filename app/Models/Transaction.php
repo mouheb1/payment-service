@@ -18,7 +18,7 @@ class Transaction extends Model
         'amount',             // Initial transaction amount
         'final_amount',       // Adjusted final amount after capture
         'status',             // Status of the transaction (pending, captured, etc.)
-        'capture_mode',       // Mode of capture (AUTO, MANUAL)
+        'capture_mode',       // Mode of capture (AUTO, LATER)
         'currency',           // Transaction currency
         'country',            // Country associated with the transaction
         'reference',          // Reference field for the transaction
@@ -36,7 +36,7 @@ class Transaction extends Model
 
     protected $attributes = [
         'status' => 'pending',     // Default transaction status
-        'capture_mode' => 'MANUAL', // Default capture mode
+        'capture_mode' => 'LATER', // Default capture mode
     ];
 
     public function user()

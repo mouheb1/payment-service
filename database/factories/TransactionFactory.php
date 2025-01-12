@@ -17,8 +17,8 @@ class TransactionFactory extends Factory
             'user_id' => User::factory(),
             'service_id' => Service::factory(),
             'transaction_id' => $this->faker->uuid,
-            'amount' => $this->faker->randomFloat(2, 10, 500),
-            'status' => ['completed', 'pending', 'failed'][rand(0, 2)],
+            'amount' => $this->faker->numberBetween(1000, 50000), // Amount in cents (e.g., 1000 = $10.00)
+            'status' => $this->faker->randomElement(['completed', 'pending', 'failed']),
         ];
     }
 }

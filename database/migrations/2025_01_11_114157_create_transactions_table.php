@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('service_id')->constrained()->onDelete('cascade'); // Link to services table
             $table->string('transaction_id')->unique(); // Transaction ID from payment gateway
             $table->decimal('amount', 10, 2); // Amount paid
-            $table->enum('status', ['pending', 'success', 'failed'])->default('pending'); // Transaction status
+            $table->enum('status', ['pending', 'success', 'failed', 'PREAUTHORIZED'])->default('pending'); // Transaction status
             $table->timestamps(); // created_at and updated_at
         });
     }

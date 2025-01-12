@@ -23,7 +23,7 @@ export default function Services({ services }) {
                                     ${service.price.toFixed(2)}
                                 </p>
                                 <Link
-                                    href={route('transactions.createForm')}
+                                    href={route('transactions.preauthorizeForm', { serviceId: service.id })}
                                     className="mt-4 inline-block w-full rounded bg-blue-600 px-4 py-2 text-center text-white hover:bg-blue-700"
                                 >
                                     Pay Now

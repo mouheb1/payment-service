@@ -13,9 +13,8 @@ class UpdateTransactionsTable extends Migration
             $table->string('capture_id')->nullable();       // Capture ID
             $table->decimal('amount', 10, 2)->change();     // Ensure amount has two decimal places
             $table->decimal('final_amount', 10, 2)->nullable();
-            $table->string('status')->default('pending');
-            $table->string('capture_mode')->default('MANUAL');
-            $table->string('currency')->nullable();         // Transaction currency
+            $table->string('capture_mode')->default('LATER');
+            $table->string('currency')->nullable();         // Transaction currency 
             $table->string('country')->nullable();          // Country for transaction
             $table->string('reference')->nullable();        // Reference ID
             $table->string('merchant_id')->nullable();      // Merchant ID
@@ -31,6 +30,7 @@ class UpdateTransactionsTable extends Migration
             $table->dropColumn([
                 'authorization_id',
                 'capture_id',
+                'capture_mode',
                 'final_amount',
                 'currency',
                 'country',
