@@ -202,7 +202,7 @@ class TransactionController extends Controller
         $token = $paymentService->generateAccessToken();
 
         // Convert amount to integer (cents)
-        $amountInCents = (int) round($request->amount * 100);
+        $amountInCents = (int) round($request->amount);
 
         // We do a capture on the same transaction ID
         $payload = [
