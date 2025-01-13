@@ -104,4 +104,18 @@ class GlobalPaymentsService
 
         return $response->json();
     }
+
+    public function getProviderTransactionDetails($token, $transactionId)
+    {
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'X-GP-Version' => '2021-03-22',
+        ])->withToken($token)->get("{$this->baseUrl}/transactions/{$transactionId}");
+
+        if ($response->failed()) {
+            throw new \Exception('Failed to fetch transaction details: ' . $response->body());
+        }
+
+        return $response->json();
+    }
 }

@@ -63,14 +63,16 @@ export default function ProviderIndex({
         }
     };
 
-    const viewTransactionDetails = async (transactionId, source) => {
+    const viewTransactionDetails = async (transactionId) => {
         setLoading(true);
+
         try {
-            const response = await router.get(`/transactions/details`, {
-                id: transactionId,
-                source,
+            const response = await axios.get(`/provider-transactions/details`, {
+                params: { id: transactionId },
             });
-            setSelectedTransaction(response.transaction);
+
+            // Assuming the response includes the transaction as `response.data.transaction`
+            setSelectedTransaction(response.data.transaction);
         } catch (error) {
             console.error("Error fetching transaction details:", error);
         } finally {
@@ -277,15 +279,270 @@ export default function ProviderIndex({
                     </div>
                 </div>
             </div>
+
+            {/* Transaction Details Modal */}
             {selectedTransaction && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-6 rounded shadow-md w-1/2">
+                    <div className="bg-white p-6 rounded shadow-md w-3/4 overflow-y-auto max-h-screen">
                         <h3 className="text-lg font-semibold mb-4">
                             Transaction Details
                         </h3>
-                        <pre className="bg-gray-100 p-4 rounded overflow-auto">
-                            {JSON.stringify(selectedTransaction, null, 2)}
-                        </pre>
+
+                        <div className="space-y-6">
+                            {/* General Information */}
+                            <div>
+                                <h4 className="font-semibold text-gray-700 mb-2">
+                                    General Information
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <strong>ID:</strong>{" "}
+                                        {selectedTransaction.id}
+                                    </div>
+                                    <div>
+                                        <strong>Status:</strong>{" "}
+                                        {selectedTransaction.status}
+                                    </div>
+                                    <div>
+                                        <strong>Type:</strong>{" "}
+                                        {selectedTransaction.type}
+                                    </div>
+                                    <div>
+                                        <strong>Created At:</strong>{" "}
+                                        {new Date(
+                                            selectedTransaction.time_created
+                                        ).toLocaleString()}
+                                    </div>
+                                    <div>
+                                        <strong>Last Updated:</strong>{" "}
+                                        {selectedTransaction.time_last_updated ||
+                                            "N/A"}
+                                    </div>
+                                    <div>
+                                        <strong>Country:</strong>{" "}
+                                        {selectedTransaction.country || "N/A"}
+                                    </div>
+                                    <div>
+                                        <strong>Language:</strong>{" "}
+                                        {selectedTransaction.language || "N/A"}
+                                    </div>
+                                    <div>
+                                        <strong>IP Address:</strong>{" "}
+                                        {selectedTransaction.ip_address ||
+                                            "N/A"}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Merchant Information */}
+                            <div>
+                                <h4 className="font-semibold text-gray-700 mb-2">
+                                    Merchant Information
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <strong>Merchant ID:</strong>{" "}
+                                        {selectedTransaction.merchant_id}
+                                    </div>
+                                    <div>
+                                        <strong>Merchant Name:</strong>{" "}
+                                        {selectedTransaction.merchant_name}
+                                    </div>
+                                    <div>
+                                        <strong>Account ID:</strong>{" "}
+                                        {selectedTransaction.account_id}
+                                    </div>
+                                    <div>
+                                        <strong>Account Name:</strong>{" "}
+                                        {selectedTransaction.account_name}
+                                    </div>
+                                    <div>
+                                        <strong>Channel:</strong>{" "}
+                                        {selectedTransaction.channel}
+                                    </div>
+                                    <div>
+                                        <strong>Batch ID:</strong>{" "}
+                                        {selectedTransaction.batch_id}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Payment Details */}
+                            <div>
+                                <h4 className="font-semibold text-gray-700 mb-2">
+                                    Payment Details
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <strong>Amount:</strong>{" "}
+                                        {selectedTransaction.amount}
+                                    </div>
+                                    <div>
+                                        <strong>Currency:</strong>{" "}
+                                        {selectedTransaction.currency}
+                                    </div>
+                                    <div>
+                                        <strong>Reference:</strong>{" "}
+                                        {selectedTransaction.reference}
+                                    </div>
+                                    <div>
+                                        <strong>Description:</strong>{" "}
+                                        {selectedTransaction.description ||
+                                            "N/A"}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Card Details */}
+                            <div>
+                                <h4 className="font-semibold text-gray-700 mb-2">
+                                    Card Details
+                                </h4>
+                                {selectedTransaction.payment_method?.card ? (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <strong>Card Brand:</strong>{" "}
+                                            {
+                                                selectedTransaction
+                                                    .payment_method.card.brand
+                                            }
+                                        </div>
+                                        <div>
+                                            <strong>Auth Code:</strong>{" "}
+                                            {
+                                                selectedTransaction
+                                                    .payment_method.card
+                                                    .authcode
+                                            }
+                                        </div>
+                                        <div>
+                                            <strong>Masked Number:</strong>{" "}
+                                            {
+                                                selectedTransaction
+                                                    .payment_method.card
+                                                    .masked_number_first6last4
+                                            }
+                                        </div>
+                                        <div>
+                                            <strong>Funding Type:</strong>{" "}
+                                            {
+                                                selectedTransaction
+                                                    .payment_method.card.funding
+                                            }
+                                        </div>
+                                        <div>
+                                            <strong>CVV Result:</strong>{" "}
+                                            {selectedTransaction.payment_method
+                                                .card.cvv_result || "N/A"}
+                                        </div>
+                                        <div>
+                                            <strong>AVS Address Result:</strong>{" "}
+                                            {selectedTransaction.payment_method
+                                                .card.avs_address_result ||
+                                                "N/A"}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>No card details available.</div>
+                                )}
+                            </div>
+
+                            {/* Risk Assessment */}
+                            <div>
+                                <h4 className="font-semibold text-gray-700 mb-2">
+                                    Risk Assessment
+                                </h4>
+                                {selectedTransaction.risk_assessment ? (
+                                    <div>
+                                        <div>
+                                            <strong>Risk Mode:</strong>{" "}
+                                            {
+                                                selectedTransaction
+                                                    .risk_assessment.mode
+                                            }
+                                        </div>
+                                        <div>
+                                            <strong>Risk Result:</strong>{" "}
+                                            {
+                                                selectedTransaction
+                                                    .risk_assessment.result
+                                            }
+                                        </div>
+                                        <h5 className="font-semibold mt-2">
+                                            Rules:
+                                        </h5>
+                                        <ul className="list-disc pl-5">
+                                            {selectedTransaction.risk_assessment.rules.map(
+                                                (rule, index) => (
+                                                    <li key={index}>
+                                                        <strong>
+                                                            {rule.description}:
+                                                        </strong>{" "}
+                                                        {rule.result}
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        No risk assessment details available.
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* System Details */}
+                            <div>
+                                <h4 className="font-semibold text-gray-700 mb-2">
+                                    System Details
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <strong>MID:</strong>{" "}
+                                        {selectedTransaction.system?.mid}
+                                    </div>
+                                    <div>
+                                        <strong>TID:</strong>{" "}
+                                        {selectedTransaction.system?.tid}
+                                    </div>
+                                    <div>
+                                        <strong>Name:</strong>{" "}
+                                        {selectedTransaction.system?.name}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Actions */}
+                            <div>
+                                <h4 className="font-semibold text-gray-700 mb-2">
+                                    Action Details
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <strong>Action ID:</strong>{" "}
+                                        {selectedTransaction.action?.id}
+                                    </div>
+                                    <div>
+                                        <strong>Type:</strong>{" "}
+                                        {selectedTransaction.action?.type}
+                                    </div>
+                                    <div>
+                                        <strong>Result Code:</strong>{" "}
+                                        {
+                                            selectedTransaction.action
+                                                ?.result_code
+                                        }
+                                    </div>
+                                    <div>
+                                        <strong>Created At:</strong>{" "}
+                                        {new Date(
+                                            selectedTransaction.action?.time_created
+                                        ).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <button
                             onClick={closeModal}
                             className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"

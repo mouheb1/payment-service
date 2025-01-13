@@ -65,8 +65,9 @@ Route::middleware('auth')->group(function () {
         ->name('transactions.capture');
 
     Route::get('/provider-transactions', [ProviderTransactionController::class, 'index'])->name('provider.transactions.index');
-    
-    
+
+    Route::get('/provider-transactions/details', [ProviderTransactionController::class, 'getTransactionDetails'])
+        ->name('provider.transactions.details');
 });
 
 

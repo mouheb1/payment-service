@@ -50,4 +50,20 @@ class ProviderTransactionController extends Controller
             'filters' => $filters,
         ]);
     }
+
+    public function getTransactionDetails(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|string',
+        ]);
+
+        try {
+            $token = $this->paymentService->generateAccessToken();
+            $transaction = $this->paymentService->getProviderTransactionDetails($token, $request->id);
+
+            return response()->json(['transaction' => $transaction]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }
