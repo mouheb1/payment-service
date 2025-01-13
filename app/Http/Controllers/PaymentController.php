@@ -34,7 +34,7 @@ class PaymentController extends Controller
 
         $timestamp = now()->format('YmdHis');
         $orderId = uniqid();
-        $amount = intval($request->amount * 100); // Convert to cents
+        $amount = intval($request->amount); // Convert to cents
         $currency = 'EUR';
 
         // Calculate SHA1HASH
