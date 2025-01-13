@@ -107,6 +107,9 @@ export default function TransactionsIndex({ transactions }) {
                             <strong>ID:</strong> {selectedTransaction.id}
                         </div>
                         <div className="mb-4">
+                            <strong>Transaction ID:</strong> {selectedTransaction.transaction_id}
+                        </div>
+                        <div className="mb-4">
                             <strong>Service:</strong>{" "}
                             {selectedTransaction.service?.name ?? "N/A"}
                         </div>
